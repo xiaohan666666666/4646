@@ -255,5 +255,102 @@ addRoundButton(FunctionTab, {
     Color = Color3.fromRGB(200, 100, 100)
 })
 
+-- 新增自动PVP相关内容
+local function getOtherPlayers()
+    local otherPlayers = {}
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= player then
+            table.insert(otherPlayers, plr)
+        end
+    end
+    return otherPlayers
+end
+
+local selectedOpponent = nil
+local isAutoPVPRunning = false
+local victoryInterval = 5 -- 尝试宣告胜利的间隔时间（秒）
+
+-- 选择对手函数
+local function selectOpponent(player)
+    selectedOpponent = player
+    OrionLib:MakeNotification({Name = "选择成功", Content = "已选择 ".. player.Name.. " 作为对手", Time = 2})
+end
+
+-- 开始自动PVP函数
+local function startAutoPVP()
+    if isAutoPVPRunning then
+        OrionLib:MakeNotification({Name = "提示", Content = "自动PVP已经在运行", Time = 2})
+        return
+    end
+    if not selectedOpponent then
+        OrionLib:MakeNotification({Name = "提示", Content = "请先选择对手", Time = 2})
+        return
+    end
+    local args = {
+        [1] = "qwththh",
+        [2] = true,
+        [3] = false
+    }
+    isAutoPVPRunning = true
+    OrionLib:MakeNotification({Name = "成功", Content = "自动PVP已启动", Time = 2})
+    local function autoPVP()
+        while isAutoPVPRunning do
+            local success, err = pcall(function()
+                game:GetService("ReplicatedStorage").Remotes.Events.WinEvent_PVP:FireServer(unpack(args))
+            end)
+            if success then
+                OrionLib:MakeNotification({Name = "胜利", Content = "成功宣告胜利", Time = 2})
+            else
+                OrionLib:MakeNotification({Name = "失败", Content = "宣告胜利失败: ".. tostring(err), Time = 2})
+            end
+            wait(victoryInterval)
+        end
+    end
+    spawn(autoPVP)
+end
+
+-- 停止自动PVP函数
+local function stopAutoPVP()
+    if not isAutoPVPRunning then
+        OrionLib:MakeNotification({Name = "提示", Content = "自动PVP未运行", Time = 2})
+        return
+    end
+    local args = {
+        [1] = 0
+    }
+    local success, err = pcall(function()
+        game:GetService("ReplicatedStorage").Remotes.Events.RemoveC:FireServer(unpack(args))
+    end)
+    if success then
+        isAutoPVPRunning = false
+        OrionLib:MakeNotification({Name = "成功", Content = "自动PVP已停止", Time = 2})
+    else
+        OrionLib:MakeNotification({Name = "错误", Content = "停止自动PVP失败: ".. tostring(err), Time = 2})
+    end
+end
+
+-- 选择对手标签页
+local OpponentSelectionTab = Window:MakeTab({Name = "选择PVP对手", Icon = "rbxassetid://4483345998"})
+local otherPlayers = getOtherPlayers()
+for _, opp in pairs(otherPlayers) do
+    OpponentSelectionTab:AddButton({
+        Name = opp.Name,
+        Callback = function() selectOpponent(opp) end,
+        Color = Color3.fromRGB(0, 150, 255)
+    })
+end
+
+FunctionTab:AddButton({
+    Name = "开始自动PVP",
+    Callback = startAutoPVP,
+    Color = Color3.fromRGB(0, 200, 100)
+})
+
+FunctionTab:AddButton({
+    Name = "停止自动PVP",
+    Callback = stopAutoPVP,
+    Color = Color3.fromRGB(200, 100, 100)
+})
+
 -- 初始化Orion库
 OrionLib:Init()
