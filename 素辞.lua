@@ -1,39 +1,39 @@
-local WHITELIST = {
-    [8515693093] = true, -- 作者ID
-    [6039062907] = true,
-    [8080735686] = true,
-    [7079287947] = true, -- 新增白名单ID
-    [3937432816] = true  -- 新增白名单ID
-    -- 可继续添加白名单ID
+当地的本地白名单 = {
+    [8515693093]=真实，——作者身份8515693093] = 真实的, -- 作者身份证
+    [6039062907]= 真，6039062907] = 真实的,
+    [8080735686]= 真，8080735686] = 真实的,
+    [[5074612207]]=真实，—新增白名单7079287947] = 真实的, -- 新增白名单ID
+    [3937432816]=真实—新增白名单3937432816] = 真实的  -- 新增白名单ID
+    -- 可继续添加白名单标识
 }
 
--- 加载Orion库
-local OrionLib
-local success, err = pcall(function()
-    OrionLib = loadstring(game:HttpGet("https://pastebin.com/raw/FUEx0f3G"))()
-end)
-if not success or not OrionLib then
-    warn("Orion库加载失败: ".. (err or "未知错误"))
-    return
-end
+-- 加载猎户座（Orion）库
+当地的本地 OrionLib
+当地的局部成功，err=pcall（功能（）功能()
+OrionLib = loadstring（game:HttpGet（"https://pastebin.com/raw/FUEx0f3G"））（）"https://pastebin.com/raw/FUEx0f3G"))()
+结束结束）
+如果不成功或不OrionLib然后
+警告（"猎户座（猎户座）库加载失败:"..（错误或"未知错误"））"猎户座（猎户座）库加载失败:“..（错误或 "未知错误"未知错误"))
+    返回
+结束
 
 -- 服务与变量初始化
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+当地的当地的玩家 = 游戏:GetService（“玩家”）"玩家")
+当地的本地玩家=玩家。
+当地的"ReplicatedStorage"）"ReplicatedStorage")
 
 -- 白名单验证
-if not WHITELIST[player.UserId] then
-    pcall(function()
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "未授权访问",
-            Text = "您的ID不在白名单中",
-            Duration = 5,
-            Icon = "rbxassetid://9108657181"
+如果 不白名单[玩家.用户ID]然后
+函数（）功能（）
+游戏:GetService（"StarterGui"）:设置核心（"发送通知"， {"StarterGui"）:设置核心（"发送通知", {
+标题="未授权访问","未授权访问",
+文本 ="您的身份证不在白名单中","您的身份证不在白名单中",
+持续时间=5，5,
+图标="rbxassetid://9108657181""rbxassetid://9108657181"
         })
-    end)
-    local RestrictWindow = OrionLib:MakeWindow({
-        Name = "访问受限",
+    结束)
+    当地的RestrictWindow = OrionLib:MakeWindow（{
+名称=“访问受限”,"访问受限","访问受限",
         Theme = "Dark",
         Icon = "rbxassetid://9108657181"
     })
