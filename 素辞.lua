@@ -141,10 +141,6 @@ local FunctionTab = Window:MakeTab({Name = "玩家功能", Icon = "rbxassetid://
 
 -- 自动获取经验相关变量和逻辑
 local isGainingExp = false
-local expRemoteEvent = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Events"):WaitForChild("WinEvent") -- 替换为实际路径
-local expArgs = {
-    [1] = "50" -- 替换为实际参数
-}
 local gainExpThread = nil
 local defaultWaitTime = 1
 local currentWaitTime = defaultWaitTime
@@ -158,9 +154,18 @@ local function startGainExp()
     isGainingExp = true
     gainExpThread = spawn(function()
         while isGainingExp do
-            pcall(function()
-                expRemoteEvent:FireServer(unpack(expArgs))
+            local args = {
+                [1] = "Boss10"
+            }
+            local success, err = pcall(function()
+                game:GetService("ReplicatedStorage").Remotes.Events.WinBossEvent:FireServer(unpack(args))
             end)
+            if success then
+                -- 以下这行是原来的成功通知，删除或注释掉即可去掉对应的弹窗
+                -- OrionLib:MakeNotification({Name = "成功", Content = "成功触发击败Boss10事件", Time = 2})
+            else
+                OrionLib:MakeNotification({Name = "错误", Content = "触发击败Boss10事件失败: ".. tostring(err), Time = 2})
+            end
             wait(currentWaitTime)
         end
     end)
@@ -184,7 +189,7 @@ end
 -- 添加自动获取经验的开关按钮
 FunctionTab:AddToggle({
     Name = "自动获取经验",
-    Description = "开启后自动循环获取经验，无需手动操作",
+    Description = "开启后自动循环触发击败Boss10获取经验，无需手动操作",
     Default = false,
     Callback = function(Value)
         if Value then
